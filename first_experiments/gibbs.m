@@ -1,4 +1,4 @@
-%% Markov Chain Monte Carlo methods
+%% Gibbs sampling
 %% Standard import statements
 addpath('../');
 
@@ -78,6 +78,24 @@ all(eig(Sigma) > 0)
 % Generate first sample
 x0 = mvnrnd(mu, Sigma);
 
+% Define number of iterations
+n_iter = 1000
+
+% Generate samples
+x = {x0};
+for ii=1:n_iter
+    % Generate sample x1 from p(x1|x2=a)
+    observ = [x{ii}(2),x{ii}(3)]
+    sample_x1 = gaussian_conditional_sample_ND(mu, Sigma, 1, observ);
+    % Generate sample x2 from p(x2|x1=a)
+    observ = [x{ii}(1),x{ii}(3)]
+    sample_x2 = gaussian_conditional_sample_ND(mu, Sigma, 2, observ);
+    % Same for x3
+    observ = [x{ii}(1),x{ii}(2)]
+    sample_x3 = gaussian_conditional_sample_ND(mu, Sigma, 3, observ);
+    % Store samples
+    x{ii+1} = [sample_x1, sample_x2];
+end
 
 
 
