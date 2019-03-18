@@ -2,6 +2,7 @@
 % Generalization of the bivariate case
 % https://math.stackexchange.com/questions/3145228/conditional-multivariate-normal-beyond-the-bivariate-case
 % Great solution here: https://stats.stackexchange.com/questions/239317/find-conditional-expectation-from-a-3-dimensional-random-vector?rq=1
+% Stanford reference: http://cs229.stanford.edu/section/more_on_gaussians.pdf
 
 function sample = gaussian_conditional_sample_ND(mu, Sigma, sampling_idx, observ)
     if sampling_idx == 1

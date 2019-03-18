@@ -1,4 +1,4 @@
-%% Gibbs sampling
+%% Gibbs Sampling
 %% Standard import statements
 addpath('../');
 

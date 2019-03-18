@@ -1,106 +1,73 @@
-%% Importing all the necessary functions
+%% Metropolis Hastings algorithm
+
+%% Standard import statements
 addpath('../');
 
-%% Create strange-ish distribution
-x = [-30:0.1:40];
-y1 = normpdf(x, 0, 2);
-y2 = normpdf(x, 20, 7);
-p = create_distribution(y1,y2)
-
-% fun = @create_distribution;
-% AUC = integral(@(y1,y2)fun(y1,y2), -Inf, Inf)
+%% Unnormalized function whose normalized version you want to approximate
+x = [-30:0.1:40]
+mu_tilde = [-10, 20];
+sigma_tilde = [5, 7];
+p_tilde = gaussian_mix(x, mu_tilde, sigma_tilde, [1,1], 0);
 
 figure(1)
-plot(x, p)
-xlabel('x')
-ylabel('p(x)')
-title('Function we want to approximate')
-
-%% Create unnormalized distribution and proposal distribution
-
-p_tilde = p * 2;
-sigma = 1;
-k = 1;
-
-n_iterations=2000;
-
-% How to define the proposal distribution?
-x0 = median(x); % Pure intuition. Not backed up by anything. 
-% In this example, however, it would lead to less rejection, should we do
-% something like rejection sampling.
-[max_p, idx] = max(p);
-x0 = x(idx); % based on the Laplace Approximation (Bishop p. 214)
-
-% Sigma cannot be defined arbitrarily! At least not for the Laplace
-% approximation.
-
-q = normpdf(x, x0, sigma);
-
-% Plot the functions before guaranteeing that q > p
-figure(2) 
 plot(x, p_tilde)
-hold on
-plot(x, q)
+title('p_{tilde}')
+xlabel('X')
+ylabel('Density')
 
-% Guarantees that k*q > p 
-iter = 1
-while sum(p_tilde > k*q) > 1 % does the job but will be inefficient!
-    k = k + 1;
-    sigma = sigma + 1
-    q = normpdf(x, x0, sigma)
-    iter = iter + 1;
-    k
-    sigma
-end
+%% Proposal distribution
+% ﻿The user is free to use any kind of proposal they want, subject to
+% some conditions.
+% A commonly used proposal is a symmetric Gaussian distribution centered 
+% on the current state, q(x'|x)= N(x'|x,Σ); this is called a random walk 
+% Metropolis algorithm.
+% ﻿This is a somewhat tricky target distribution, since it consists of 
+% two well separated modes. It is very important to set the variance of the 
+% proposal v correctly: If the variance is too low, the chain will only 
+% explore one of the modes, as shown in Figure 24.7(a), but if the variance 
+% is too large, most of the moves will be rejected, and the chain will be 
+% very sticky, i.e., it will stay in the same state for a long time. This
 
-iter = 1
-% From graphical intuition
-while sum(p_tilde > k*q) > 1
-    if max(p_tilde)>max(k*q)
-        k = k + 1;
-        iter = iter + 1;
-    else 
-        sigma = sigma + 1;
-        iter = iter + 1;
-    end
-    q = normpdf(x, x0, sigma)
-    sigma
-    k
-    iter
-end
+%% Initialize x0 and define number of iterations
 
+x0 = normrnd(0,1)
 
-q_prop = k*normpdf(x, x0, sigma)
+%% For loop for MH random walk
 
-figure(3) 
-plot(x, p_tilde)
-hold on
-plot(x, q_prop)
+n_iter = 10^6;
+x_list = {x0};
+Sigma = .5; % How to choose the variance??
 
+samples = mh_random_walk(n_iter, x0, Sigma, [1,1], mu_tilde, sigma_tilde)
 
-% 
-% for i = 1:n_iterations
-%     mean = 
-%     q = normpdf()
-% end
+%% Plotting
 
-%% Getting to the Metropolis-Hastings algorithm
+samples_mat = cell2mat(samples)
 
-% Creating the proposal distribution
-% To figure out how to define the conditional distribution of two gaussian
-% random variables: https://stats.stackexchange.com/questions/30588/deriving-the-conditional-distributions-of-a-multivariate-normal-distribution
-% Also: https://en.wikipedia.org/wiki/Multivariate_normal_distribution#Conditional_distributions
-function q = prop_fun(x1, x2, mean1)
+figure(2)
+histogram(samples_mat, 'FaceColor', [254,178,76]/255, 'NumBins', 100);
+title("Metropolis Hastings random walk - Initialization as N(0,1)");
+xlabel('X')
+ylabel('Absolute frequency');
+% axis([-10 30 0 Inf]);
 
-% Initialization, at t=0:
-z_t = median(x)
+% With a variance of 1, you indeed only explore one of the modes!
+% It probably also depends on the initialization.
 
-% t=1:
-z_star = 
+%% MH random walk with mixture proposals
 
-accept_prob = min(1, p_tilde(z_star)/p_tilde(z_t))
+n_iter = 10^6;
+x_list = {x0};
+Sigma = 1; % How to choose the variance??
 
-if accept_prob > rand
-    z_t = z_star
+weights = [1/3, 1/3, 1/3];
+samples_mixture_prop = mh_random_walk_mixture_proposals(n_iter, x0, Sigma, weights, mu_tilde, sigma_tilde)
 
+samples_mixt_mat = cell2mat(samples_mixture_prop)
+
+figure(3)
+histogram(samples_mixt_mat, 'FaceColor', [254,178,76]/255, 'NumBins', 100);
+title("Metropolis Hastings random walk with mixture proposals");
+xlabel('X')
+ylabel('Absolute frequency');
 

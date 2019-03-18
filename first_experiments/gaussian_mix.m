@@ -1,15 +1,15 @@
-function p = gaussian_mix(x, list_mu, list_sigma, normalize)
+function p = gaussian_mix(x, list_mu, list_sigma, weights, normalize)
     if normalize ~=1 && normalize ~= 0
         error('Not an allowed value for the normalize argument! Pick either 0 or 1!')
     end
     
     p = zeros(size(x));
     
-    if size(list_mu) ~= size(list_sigma)
-        error('List of mu and sigma values must have the same size!')
+    if length(list_mu) ~= length(list_sigma) || length(list_mu) ~= length(weights)
+        error('List of mu, sigma and weight values must have the same size!')
     else
-        for i=1:length(list_mu)
-        p = p + normpdf(x, list_mu(i), list_sigma(i));
+        for ii=1:length(list_mu)
+        p = p + weights(ii)*normpdf(x, list_mu(ii), list_sigma(ii));
         end
     end
     

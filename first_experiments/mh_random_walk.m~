@@ -1,0 +1,23 @@
+function samples = mh_random_walk(n_iter, initial_state, Sigma, mu_tilde, sigma_tilde)
+    samples = {initial_state}
+    for ii=1:n_iter
+        % Define x = x^S
+        x = samples{ii};
+        % Sample x' ~ q(x'|x)
+        x_prime = normrnd(x,Sigma);
+        % Compute acceptance probability alpha
+        alpha = (gaussian_mix(x_prime, mu_tilde, sigma_tilde, 0)*normpdf(x_prime, Sigma))/gaussian_mix(x, mu_tilde, sigma_tilde, 0)*normrnd(x,Sigma);
+        % Compute r = min(1,alpha)
+        r = min(1,alpha);
+        % Sample u ~ U(0,1)
+        u = rand();
+        % Set new sample to x^S+1 = x' if u<r OR x^S+1 =x^S if u>=r
+        if u<r
+            samples{ii+1} = x_prime;
+        else
+             samples{ii+1} = x;
+        end
+end
+
+disp('Done!')
+end
