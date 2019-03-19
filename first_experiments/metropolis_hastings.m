@@ -58,7 +58,7 @@ ylabel('Absolute frequency');
 
 n_iter = 10^6;
 x_list = {x0};
-Sigma = 1; % How to choose the variance??
+Sigma = 6   ; % How to choose the variance??
 
 weights = [1/3, 1/3, 1/3];
 samples_mixture_prop = mh_random_walk_mixture_proposals(n_iter, x0, Sigma, weights, mu_tilde, sigma_tilde)
