@@ -36,7 +36,7 @@ x0 = normrnd(0,1)
 
 n_iter = 10^6;
 x_list = {x0};
-Sigma = .5; % How to choose the variance??
+Sigma = 1; % How to choose the variance??
 
 samples = mh_random_walk(n_iter, x0, Sigma, [1,1], mu_tilde, sigma_tilde)
 
@@ -56,7 +56,8 @@ ylabel('Absolute frequency');
 
 %% MH random walk with mixture proposals
 
-n_iter = 10^6;
+x0 = 20
+n_iter = 10^7;
 x_list = {x0};
 Sigma = 6   ; % How to choose the variance??
 
@@ -71,3 +72,20 @@ title("Metropolis Hastings random walk with mixture proposals");
 xlabel('X')
 ylabel('Absolute frequency');
 
+%% Hybrid/Hamiltonian Monte Carlo
+
+n_iter = 10^3
+L = 10
+rho = 1
+mu_tilde = [-10, 20];
+sigma_tilde = [5, 7];
+x0 = -10
+samples_hybrid = hybrid_mc(n_iter, L, x0, rho, mu_tilde, sigma_tilde)
+
+samples_hybrid_mat = cell2mat(samples_hybrid)
+
+figure(4)
+histogram(samples_hybrid_mat, 'FaceColor', [254,178,76]/255, 'NumBins', 100);
+title("Hamiltonian Metropolis Hastings");
+xlabel('X')
+ylabel('Absolute frequency');
