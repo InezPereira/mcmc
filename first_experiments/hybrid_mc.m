@@ -7,6 +7,18 @@
 % for Machine Learning", by Andrieu et al, 2003.
 % It was really super helpful to understand how hybrid MC works!
 
+% Also inspired on Radford N. Neal's chapter "MCMC using
+% Hamiltonian Dynamics" (from the Handbook of Markov Chain Monte Carlo)
+
+% Distribution of the momentum variables:
+% - ﻿We can choose the distribution of the momentum variables, p, which 
+% are independent of q, as we wish, specifying the distribution via the 
+% kinetic energy function, K(p). Current practice with HMC is to use a 
+% quadratic kinetic energy, as in Equation 5.5, which leads p to have a 
+% zero-mean multivariate Gaussian distribution. Most often, the components
+% are specified to be independent. So you retrieve the energy function in
+% equation 5.23
+
 % Issues: 
 % - When computing gradients, should I be doing it with respect to p_tilde
 % (aka the unnormalized posterior)?
