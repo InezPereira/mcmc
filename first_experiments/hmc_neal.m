@@ -1,16 +1,16 @@
-%% Hamiltonian MC using Neal's Chapter from the Handbook of MCMC
+%% Hamiltonian MC using Neal's 5th Chapter of the "Handbook of MCMC"
 
 % Heavily inspired on Radford N. Neal's chapter "MCMC using
-% Hamiltonian Dynamics" (from the Handbook of Markov Chain Monte Carlo)
+% Hamiltonian Dynamics" (from the "Handbook of Markov Chain Monte Carlo")
 
 % Distribution of the momentum variables:
-% - ﻿We can choose the distribution of the momentum variables, p, which 
+% - ﻿"We can choose the distribution of the momentum variables, p, which 
 % are independent of q, as we wish, specifying the distribution via the 
 % kinetic energy function, K(p). Current practice with HMC is to use a 
 % quadratic kinetic energy, as in Equation 5.5, which leads p to have a 
 % zero-mean multivariate Gaussian distribution. Most often, the components
 % are specified to be independent. So you retrieve the energy function in
-% equation 5.23
+% equation 5.23"
 
 %  Input arguments:
 %     - U: function which returns the potential energy given a value for q
@@ -63,4 +63,5 @@ function sample = hmc_neal(U, grad_U, mu, Sigma, epsilon, L, current_q)
          sample = q; % accept
      else
          sample = current_q; % reject
+         
      end
