@@ -2,7 +2,7 @@
 
 %% Import statements
 addpath('../');
-addpath('/Users/ines/Documents/MATLAB/Euler');
+% addpath('/Users/ines/Documents/MATLAB/Euler');
 
 %% Function to get the desired index directly off an output
 % Copied from https://stackoverflow.com/questions/3627107/how-can-i-index-a-matlab-array-returned-by-a-function-without-first-assigning-it
@@ -30,10 +30,11 @@ L = 10;
 q0 = 0;
 
 % Run the Hamiltonian algorithm
-n_iter = 10^5;
+n_iter = 10^2;
 samples = {q0};
+reject = 0;
 for ii=1:n_iter
-    samples{ii+1} = hmc_neal(U, grad_U, mu, Sigma, epsilon, L, samples{ii});
+    [samples{ii+1}, reject] = hmc_neal(U, grad_U, mu, Sigma, epsilon, L, samples{ii}, reject);
      
 %     % Diagnostic plot:
 %     if mod(ii, 5)==0
@@ -44,6 +45,9 @@ for ii=1:n_iter
 %      ylabel('Hamiltonian')
 %     end
 end
+
+% samples_hmc_mat = cell2mat(samples)
+% save('samples_hmc_mat','samples_hmc_mat')
 
 %% Final visualizations
 

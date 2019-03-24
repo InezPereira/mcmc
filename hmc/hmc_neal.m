@@ -21,7 +21,8 @@
 %     - mu, Sigma: moments of the distribution of p (which is often assumed gaussian)
 
 
-function sample = hmc_neal(U, grad_U, mu, Sigma, epsilon, L, current_q)
+function [sample, reject] = hmc_neal(U, grad_U, mu, Sigma, epsilon, L, current_q, reject)
+
     q = current_q;
 
     % In the first step, new values for the momentum are drawn from their
@@ -63,5 +64,5 @@ function sample = hmc_neal(U, grad_U, mu, Sigma, epsilon, L, current_q)
          sample = q; % accept
      else
          sample = current_q; % reject
-         
+         reject = reject +1;
      end
