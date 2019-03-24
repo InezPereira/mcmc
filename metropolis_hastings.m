@@ -1,7 +1,7 @@
 %% Metropolis Hastings algorithm
 
 %% Standard import statements
-addpath('../');
+addpath('mcmc/hmc/');
 addpath('/Users/ines/Documents/MATLAB/Euler');
 
 

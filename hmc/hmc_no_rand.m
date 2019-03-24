@@ -1,5 +1,7 @@
 %% Hamiltonian MC using Neal's 5th Chapter of the "Handbook of MCMC"
 
+% HMC with no randomization. Simplest implementation.
+
 % Heavily inspired on Radford N. Neal's chapter "MCMC using
 % Hamiltonian Dynamics" (from the "Handbook of Markov Chain Monte Carlo")
 
@@ -21,42 +23,31 @@
 %     - mu, Sigma: moments of the distribution of p (which is often assumed gaussian)
 
 
-function [sample, reject] = hmc_neal(U, grad_U, mu, Sigma, epsilon, randomize_epsilon, L,randomize_L, current_q, reject)
-
-if randomize_epsilon ~=0 && randomize_epsilon ~=1 
-    error('Randomization argument for epsilon should be 0 or 1.')
-elseif randomize_L~=0 && randomize_L ~=1
-    error('Randomization argument for L should be 0 or 1.')
-else  
-    
+function [sample, reject] = hmc_no_rand(U, grad_U, mu, Sigma, epsilon, L, current_q, reject)
     q = current_q;
 
     % In the first step, new values for the momentum are drawn from their
     % distribution (in practise often a gaussian distribution)
     p = normrnd(mu, Sigma);  % You want to generate one sample p_i per mu or Sigma.
     current_p = p;
-    
-    % Leapfrog algorithm dependent on randomization options
-    if randomize_epsilon == 1
-        epsilon_input = epsilon;
-        epsilon = unifrnd(epsilon_input-0.2*epsilon_input, epsilon_input+0.2*epsilon_input);
-        if randomize_L == 1 % Randomize both epsilon and L
-            L_input = L;
-            L = ceil(unifrnd(L_input-0.2*L_input, L_input+0.2*L_input));
-            [q, p] = leapfrog(p, epsilon, q, grad_U, L, Sigma);
-        else % Randomize only epsilon
-            [q, p] = leapfrog(p, epsilon, q, grad_U, L, Sigma);
-        end
-    elseif randomize_epsilon == 0
-        if randomize_L == 1 % Randomize only L
-            L_input = L;
-            L = ceil(unifrnd(L_input-0.2*L_input, L_input+0.2*L_input));
-            [q, p] = leapfrog(p, epsilon, q, grad_U, L, Sigma);
-        else  % No randomization of L or epsilon
-            [q, p] = leapfrog(p, epsilon, q, grad_U, L, Sigma);
-        end
-    end
-    
+
+    % Leapfrog algorithm
+    % Make half a step for momentum
+     p = p - epsilon/2*grad_U(q); % gradient is taken with respect to every q_i
+     % Alternate full steps for position and momentum variables
+     for ii=1:L
+         % Full step for position
+         q = q + epsilon*p./Sigma;
+
+         % Make full step for the momentum, except at the end of trajectory
+         if ii~=L
+             p = p - epsilon*grad_U(q);
+         end
+     end
+
+     % Make another half step for the momentum in the end
+     p = p - epsilon*grad_U(q)/2;
+
      % Negate momentum to make proposal symmetric
      p = -p;
      

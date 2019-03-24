@@ -1,7 +1,8 @@
 %% Script to run Hamiltonian MC
 
 %% Import statements
-addpath('../');
+addpath('mcmc/');
+addpath('mcmc/util');
 % addpath('/Users/ines/Documents/MATLAB/Euler');
 
 %% Function to get the desired index directly off an output
@@ -25,17 +26,17 @@ U = @(q) -log(p_tilde(q));
 grad_U = @(q)subsref(gradient(U(q-1:0.1:q+1)), struct('type', '()', 'subs', {{ceil(length(q-1:0.1:q+1))}}));
 
 %% Other parameters for the HMC (leapfrog) algorithm
-epsilon = 0.1;
+epsilon = 0.2;
 L = 10;
 q0 = 0;
 
 % Run the Hamiltonian algorithm
-n_iter = 10^2;
+n_iter = 10^4;
 samples = {q0};
 reject = 0;
 for ii=1:n_iter
-    [samples{ii+1}, reject] = hmc_neal(U, grad_U, mu, Sigma, epsilon, L, samples{ii}, reject);
-     
+    [samples{ii+1}, reject] = hmc_neal(U, grad_U, mu, Sigma, epsilon, 0, L, 0, samples{ii}, reject);
+    
 %     % Diagnostic plot:
 %     if mod(ii, 5)==0
 %      H = samples{ii+1}*inv(sigma_tilde)*samples{ii+1}'
@@ -55,7 +56,7 @@ end
 figure(1)
 x = -30:0.1:40;
 plot(x, p_tilde(x)); hold on
-samples_plotted = cell2mat(samples(1:10^3:end))
+samples_plotted = cell2mat(samples(1:10^1:end))
 c = linspace(1,10,length(samples_plotted)); % more yellow is further along the line
 scatter(samples_plotted, zeros(1,length(samples_plotted)), [], c);
 xlabel('x');
