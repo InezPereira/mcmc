@@ -3,19 +3,25 @@ function p = gaussian_mix(x, list_mu, list_sigma, weights, normalize)
         error('Not an allowed value for the normalize argument! Pick either 0 or 1!')
     end
     
-    p = zeros(size(x));
-    
-    if length(list_mu) ~= length(list_sigma) || length(list_mu) ~= length(weights)
-        error('List of mu, sigma and weight values must have the same size!')
-    else
-        for ii=1:length(list_mu)
-        p = p + weights(ii)*normpdf(x, list_mu(ii), list_sigma(ii));
+    % https://brilliant.org/wiki/gaussian-mixture-model/
+    % You need to check that the weights sum up to one!
+    if sum(weights)~=1
+        error('Weights need to sum up to 1!');
+    else 
+        p = zeros(size(x));
+
+        if length(list_mu) ~= length(list_sigma) || length(list_mu) ~= length(weights)
+            error('List of mu, sigma and weight values must have the same size!')
+        else
+            for ii=1:length(list_mu)
+            p = p + weights(ii)*normpdf(x, list_mu(ii), list_sigma(ii));
+            end
         end
-    end
-    
-    if normalize == 1
-        p = p/length(list_mu);
-%     elseif normalize == 0
-%         disp('I am not normalizing, as you requested.')     
+
+        if normalize == 1 % This is not correct, right? The normalization is maintained if the weights sum up to 1, correct?
+            p = p/length(list_mu);
+    %     elseif normalize == 0
+    %         disp('I am not normalizing, as you requested.')     
+        end
     end
 end

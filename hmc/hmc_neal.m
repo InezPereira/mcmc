@@ -43,17 +43,17 @@ else
         if randomize_L == 1 % Randomize both epsilon and L
             L_input = L;
             L = ceil(unifrnd(L_input-0.2*L_input, L_input+0.2*L_input));
-            [q, p] = leapfrog(p, epsilon, q, grad_U, L, Sigma);
+            [q, p] = leapfrog(p, epsilon, q, U, grad_U, L, Sigma);
         else % Randomize only epsilon
-            [q, p] = leapfrog(p, epsilon, q, grad_U, L, Sigma);
+            [q, p] = leapfrog(p, epsilon, q, U, grad_U, L, Sigma);
         end
     elseif randomize_epsilon == 0
         if randomize_L == 1 % Randomize only L
             L_input = L;
             L = ceil(unifrnd(L_input-0.2*L_input, L_input+0.2*L_input));
-            [q, p] = leapfrog(p, epsilon, q, grad_U, L, Sigma);
+            [q, p] = leapfrog(p, epsilon, q, U, grad_U, L, Sigma);
         else  % No randomization of L or epsilon
-            [q, p] = leapfrog(p, epsilon, q, grad_U, L, Sigma);
+            [q, p] = leapfrog(p, epsilon, q, U, grad_U, L, Sigma);
         end
     end
     
