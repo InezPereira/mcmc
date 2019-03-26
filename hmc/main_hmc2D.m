@@ -13,9 +13,11 @@ Sigma = repmat(1, 1, n_dim); % Sigma for each variable p_i, here considered to h
 %% For the potential energy
 % Assume you know the posterior up to the normalization constant and that
 % it is a gaussian mixture
-mu_tilde = {[-5, -5], [0,0], [3,3]};
-sigma_tilde = {[2, 0; 0,2], [5,0;0,5], [4,0;0,4]};
-weights = [1/3,1/3,1/3];
+% mu_tilde = {[-5, -5], [0,0], [3,3]};
+n_mix = 3
+mu_tilde = {repmat(-5, 1, n_dim), repmat(0, 1, n_dim), repmat(3, 1, n_dim)}
+sigma_tilde = {2*eye(n_dim), 3*eye(n_dim), 4*eye(n_dim)}; % Assumption of independence made (no covariance)
+weights = repmat(1/n_mix, 1, n_mix);
 p_tilde = @(X) gaussian_mix_ND(X, mu_tilde, sigma_tilde, weights);
 U = @(q) -log(p_tilde(q));
 grad_U = @(q, U)gradient_ND(q,U);
@@ -46,7 +48,7 @@ L = 10;
 q0 = [0,0];
 
 % Run the Hamiltonian algorithm
-n_iter = 10^4;
+n_iter = 10^3;
 samples = {q0};
 reject = 0;
 for ii=1:n_iter
