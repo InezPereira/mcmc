@@ -18,16 +18,11 @@ sigma_tilde = {[2, 0; 0,2], [5,0;0,5], [4,0;0,4]};
 weights = [1/3,1/3,1/3];
 p_tilde = @(X) gaussian_mix_ND(X, mu_tilde, sigma_tilde, weights);
 U = @(q) -log(p_tilde(q));
-grad_U = @(q, U)gradient_2D(q,U);
+grad_U = @(q, U)gradient_ND(q,U);
 
-% grad_U = @(q)
-% 
-% spacing = 1
 % grad_U = @(q)subsref(gradient(U(q-8:spacing:q+8)), struct('type', '()', 'subs', {{ceil(length(q-1:0.1:q+1))}}));
 
 %% Stackoverflow gradient calculation
-
-nd = sum(size(F)>1);
 
 
 %% Initial plots of the distribution we want to approximate
@@ -51,7 +46,7 @@ L = 10;
 q0 = [0,0];
 
 % Run the Hamiltonian algorithm
-n_iter = 10^3;
+n_iter = 10^4;
 samples = {q0};
 reject = 0;
 for ii=1:n_iter
@@ -73,20 +68,24 @@ end
 %% Final visualizations
 
 % Figure to get the exploration space
-figure(1)
-x = -30:0.1:40;
-plot(x, p_tilde(x)); hold on
-samples_plotted = cell2mat(samples(1:10^1:end))
+figure(3)
+contour(X,Y,Z), hold on
+samples_plotted = cell2mat(samples')
+samples_plotted = samples_plotted(1:1000:end,:)
 c = linspace(1,10,length(samples_plotted)); % more yellow is further along the line
-scatter(samples_plotted, zeros(1,length(samples_plotted)), [], c);
-xlabel('x');
-ylabel('p(x)');
-title('Exploration of 1D Gaussian mixture by HMC')
+% c2 = linspace(1,10,length(samples_plotted));
+% c3 = linspace(1,10,length(samples_plotted));
+% c = [c1; c2; c3]'
+scatter(samples_plotted(:,1), samples_plotted(:,2), [], c);
+line(samples_plotted(:,1), samples_plotted(:,2)) %, 'Color', c);
+% plot(samples_plotted(:,1), samples_plotted(:,2), '-o', 'MarkerEdge', 'r');
+title('Exploration of 2D Gaussian mixture by HMC')
 
 
-figure(2)
-histogram(cell2mat(samples), 'FaceColor', [100 149 237]/255, 'NumBins', 100);
+figure(4)
+hist3(cell2mat(samples'), 'FaceColor', [100 149 237]/255, 'Nbins',[20,20]);
 title("Hamiltonian Metropolis Hastings");
 xlabel('X')
-ylabel('Absolute frequency');
+ylabel('Y')
+zlabel('Absolute frequency');
 savefig('Hybrid_MC')

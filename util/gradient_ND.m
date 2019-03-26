@@ -1,4 +1,4 @@
-function [FX, FY] = gradient_ND(x, func)
+function x_grad  = gradient_ND(x, func)
 
 % Only works for two dimensions
 
@@ -25,39 +25,20 @@ else
     end
 
     % Pass everything through your function
-    Z = func(input)
-    
-    
-    % Reshape output
-    
-    % Compute gradient
-    G = cell(nd,1);
-    [G{:}] = gradient(Z);
-    
-    % ------------------------
-    % Compute dimensions point and hence number of dimensions needed
-    n_dim = length(point);
-
-    % Create vector of numbers around that point. Distance of 1
-    % These vector have to be created separately for each dimension and need to
-    % match dimensions
-    x = x(1)-10:1:x(1)+10;
-    y = x(2)-10:1:x(2)+10;
-
-    % Create meshgrid
-    [X, Y] = meshgrid(x,y);
-    input = [X(:) Y(:)];
-
-    % Compute the output from the function whose gradient we wish to estimate
     Z = func(input);
     
     % Reshape output
-    Z = reshape(Z,size(X));
+    Z = reshape(Z,size(M{1}));
     
     % Compute gradient
-
+    nd = sum(size(Z)>1);
+    G = cell(nd,1);
+    [G{:}] = gradient(Z);
     
-    point_grad = grad(find(x==point(1)), find(y==point(2)));
+    % Find your point!!
+    len = numel(G{1});
+    x_grad = zeros(length(x),1);
+    x_grad(:, 1) = cellfun(@(c)c(ceil(len/2)), G);
     
 end
 end
