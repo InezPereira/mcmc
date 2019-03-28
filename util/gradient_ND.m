@@ -1,4 +1,5 @@
 function x_grad  = gradient_ND(x, func)
+% Replaced meshgrid with more general ndgrid: https://ch.mathworks.com/help/matlab/ref/ndgrid.html
 
 % Only works for two dimensions
 
@@ -14,7 +15,7 @@ else
     
     % Create meshgrid
     M = cell(length(x),1);
-    [M{:}] = meshgrid(P{:});
+    [M{:}] = ndgrid(P{:});
     
     % Create compatible input
     % https://stackoverflow.com/questions/758736/how-do-i-iterate-through-each-element-in-an-n-dimensional-matrix-in-matlab

@@ -1,8 +1,8 @@
 %% Script to run Hamiltonian MC
 
 %% Import statements
-addpath('mcmc/');
-addpath('mcmc/util');
+% addpath('mcmc/');
+addpath('util/');
 % addpath('/Users/ines/Documents/MATLAB/Euler');
 
 %% Function to get the desired index directly off an output
@@ -30,7 +30,7 @@ U = @(q) -log(p_tilde(q));
 % in the x (horizontal) direction. The spacing between points is ASSUMED 
 % to be 1.
 spacing = 1
-grad_U = @(q)subsref(gradient(U(q-8:spacing:q+8)), struct('type', '()', 'subs', {{ceil(length(q-1:0.1:q+1))}}));
+grad_U = @(q)subsref(gradient(U(q-3:spacing:q+3)), struct('type', '()', 'subs', {{ceil(length(q-1:spacing:q+1)/2)}}));
 
 %% Other parameters for the HMC (leapfrog) algorithm
 epsilon = 0.2; % Neal,  p. 141: " We must make epsilon proportional to d^{-1/4} to maintain a reasonable acceptance rate.
@@ -63,7 +63,7 @@ end
 figure(1)
 x = -30:0.1:40;
 plot(x, p_tilde(x)); hold on
-samples_plotted = cell2mat(samples(1:10^1:end))
+samples_plotted = cell2mat(samples(1:10^1:end));
 c = linspace(1,10,length(samples_plotted)); % more yellow is further along the line
 scatter(samples_plotted, zeros(1,length(samples_plotted)), [], c);
 xlabel('x');
@@ -78,7 +78,25 @@ xlabel('X')
 ylabel('Absolute frequency');
 savefig('Hybrid_MC')
 
-%% Stuff
+%% If you import results from the cluster and want to visualize them:
+samples = load('samples_hmc_mat');
+samples = samples.samples_hmc_mat;
 
+figure(1)
+x = -30:0.1:40;
+plot(x, p_tilde(x)); hold on;
+samples_plotted = samples(1:10^5:end);
+c = linspace(1,10,length(samples_plotted)); % more yellow is further along the line
+scatter(samples_plotted, zeros(1,length(samples_plotted)), [], c);
+xlabel('x');
+ylabel('p(x)');
+title('Exploration of 1D Gaussian mixture by HMC')
+
+
+figure(2)
+histogram(samples, 'FaceColor', [100 149 237]/255, 'NumBins', 100);
+title("Hamiltonian Metropolis Hastings");
+xlabel('X');
+ylabel('Absolute frequency');
 
 

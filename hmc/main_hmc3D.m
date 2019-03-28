@@ -3,6 +3,7 @@
 %% Import statements
 % addpath('mcmc/');
 addpath('util/');
+addpath('hmc/');
 % addpath('/Users/ines/Documents/MATLAB/Euler');
 
 %% Define the parameters necessary for kinetic energy function (assumed gaussian)
@@ -73,7 +74,7 @@ end
 figure(3)
 contour(X,Y,Z), hold on
 samples_plotted = cell2mat(samples')
-samples_plotted = samples_plotted(1:1000:end,:)
+samples_plotted = samples_plotted(1:10^1:end,:)
 c = linspace(1,10,length(samples_plotted)); % more yellow is further along the line
 % c2 = linspace(1,10,length(samples_plotted));
 % c3 = linspace(1,10,length(samples_plotted));
