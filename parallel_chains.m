@@ -15,7 +15,7 @@ Sigma = repmat(1, 1, n_dim); % Sigma for each variable p_i, here considered to h
 % it is a gaussian mixture
 % mu_tilde = {[-5, -5], [0,0], [3,3]};
 n_mix = 3
-mu_tilde = {repmat(-5, 1, n_dim), repmat(0, 1, n_dim), repmat(3, 1, n_dim)}
+mu_tilde = {repmat(-10, 1, n_dim), repmat(0, 1, n_dim), repmat(3, 1, n_dim)}
 sigma_tilde = {2*eye(n_dim), 3*eye(n_dim), 4*eye(n_dim)}; % Assumption of independence made (no covariance)
 weights = repmat(1/n_mix, 1, n_mix);
 p_tilde = @(X) gaussian_mix_ND(X, mu_tilde, sigma_tilde, weights);
@@ -41,19 +41,21 @@ figure(2)
 contour(X,Y,Z), axis equal  %// contour plot; set same scale for x and y...
 
 %% Other parameters for the HMC (leapfrog) algorithm
-epsilon = 0.2; % Neal,  p. 141: " We must make epsilon proportional to d^{-1/4} to maintain a reasonable acceptance rate.
+epsilon = 0.1; % Neal,  p. 141: " We must make epsilon proportional to d^{-1/4} to maintain a reasonable acceptance rate.
 L = 10;
 q0 = {[-20,-10], [0,0], [40,0]}
+final_reject = []
 
 tic
 ticBytes(gcp);
 nChains = 3;
 samples = {};
+reject = 0
 parfor ii = 1:nChains
 % Run the Hamiltonian algorithm
     n_iter = 10^4;
     samples{ii}= {cell2mat(q0(ii))};
-    reject = 0;
+    reject = 0
     for jj=1:n_iter
         [samples{ii}{jj+1}, reject] = hmc_neal(U, grad_U, mu, Sigma, epsilon, 1, L, 1, samples{ii}{jj}, reject);
 
@@ -61,14 +63,10 @@ parfor ii = 1:nChains
             reject_rate = reject/jj;
             fprintf('Performing iteration number: (%d)\n', jj)
             fprintf('Current rejection rate: (%d)\n', reject_rate)
-    %     % Diagnostic plot:
-    %     if mod(ii, 5)==0
-    %      H = samples{ii+1}*inv(sigma_tilde)*samples{ii+1}'
-    %      figure(1.1)
-    %      plot(ii, H); hold on
-    %      xlabel('Iteration')
-    %      ylabel('Hamiltonian')
-    %     end
+        end
+        
+        if jj == n_iter
+            final_reject(ii) = reject / n_iter
         end
     end
 end
