@@ -6,15 +6,18 @@
 function traceplots(nChain, samples, dim)
 % nChain = 3;
 % dim = 1;
-colors = generate_colors(nChains);
+colors = generate_colors(nChain);
 % colors = ['r','g','b'];
 for ii=1:nChain
     samples_plotted = cell2mat(samples{ii}')
     samples_plotted = samples_plotted(:,dim)
-%     plot(cell2mat(samples{ii}'), 'color', cell2mat(colors(ii)));
+%     plot(cell2mat(samples{ii}'), 'color', cell2mat(colors(ii))); % This
+%     plots just one dimension and does not give me any warning. It just
+%     impplicitely does it.
     plot(samples_plotted, 'color', cell2mat(colors(ii)));
     hold on;
     title('Traceplot')
     xlabel('Iteration')
     ylabel('Sample value')
 end
+hold off;
