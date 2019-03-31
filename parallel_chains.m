@@ -5,42 +5,13 @@ addpath('../');
 addpath('util/');
 addpath('hmc/');
 addpath('diagnostics/');
-% addpath('/Users/ines/Documents/MATLAB/Euler');
 
-%% Define the parameters necessary for kinetic energy function (assumed gaussian)
-n_dim = 2;
-mu = repmat(0, 1, n_dim);
-Sigma = repmat(1, 1, n_dim); % Sigma for each variable p_i, here considered to have 0 covariance
-
-%% For the potential energy
-% Assume you know the posterior up to the normalization constant and that
-% it is a gaussian mixture
-% mu_tilde = {[-5, -5], [0,0], [3,3]};
-n_mix = 3
-mu_tilde = {repmat(-10, 1, n_dim), repmat(0, 1, n_dim), repmat(3, 1, n_dim)}
-sigma_tilde = {2*eye(n_dim), 3*eye(n_dim), 4*eye(n_dim)}; % Assumption of independence made (no covariance)
-weights = repmat(1/n_mix, 1, n_mix);
-p_tilde = @(X) gaussian_mix_ND(X, mu_tilde, sigma_tilde, weights);
-U = @(q) sum(-log(p_tilde(q)));
-spacing = 1
-step = 2
-grad_U = @(q, U)subsref(gradient(U(q)-step:spacing:U(q)+step), struct('type', '()', 'subs', {{ceil(length(U(q)-step:spacing:U(q)+step)/2)}}));
-
+%% Define necessary parameters
+n_dim = 2
+[mu, Sigma, weights, p_tilde, U, grad_U] = define_param(n_dim)
 
 %% Initial plots of the distribution we want to approximate
-x = -15:.1:10; %// x axis
-y = -15:.1:10; %// y axis
-
-[X, Y] = meshgrid(x,y);
-input = [X(:) Y(:)];
-Z = p_tilde(input);
-Z = reshape(Z,size(X)); %// put into same size as X, Y
-
-figure(1)
-surf(X,Y,Z) %// 3D plot
-
-figure(2)
-contour(X,Y,Z), axis equal  %// contour plot; set same scale for x and y...
+first_visualizations(p_tilde)
 
 %% Other parameters for the HMC (leapfrog) algorithm
 epsilon = 0.1; % Neal,  p. 141: " We must make epsilon proportional to d^{-1/4} to maintain a reasonable acceptance rate.
@@ -78,33 +49,5 @@ toc
 save('samples','samples')
 
 %% Final visualizations
-
-% Choose a chain:
-chain = 2
-
-% Figure to get the exploration space
-figure(3)
-contour(X,Y,Z), hold on
-samples_plotted = cell2mat(samples{chain}')
-samples_plotted = samples_plotted(1:10^2:end,:)
-c = linspace(1,10,length(samples_plotted)); % more yellow is further along the line
-% c2 = linspace(1,10,length(samples_plotted));
-% c3 = linspace(1,10,length(samples_plotted));
-% c = [c1; c2; c3]'
-scatter(samples_plotted(:,1), samples_plotted(:,2), [], c);
-line(samples_plotted(:,1), samples_plotted(:,2)) %, 'Color', c);
-% plot(samples_plotted(:,1), samples_plotted(:,2), '-o', 'MarkerEdge', 'r');
-title('Exploration of 2D Gaussian mixture by HMC')
-hold off;
-
-
-figure(4)
-hist3(cell2mat(samples{chain}'), 'FaceColor', [100 149 237]/255, 'Nbins',[20,20]);
-title("Hamiltonian Monte Carlo");
-xlabel('X')
-ylabel('Y')
-zlabel('Absolute frequency');
-savefig('Hybrid_MC')
-
-figure(5)
-traceplots(nChains, samples, 1)
+chain = 2 % Choose a chain
+final_visualizations(chain)

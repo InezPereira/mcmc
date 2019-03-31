@@ -15,9 +15,9 @@ function samples = mh_random_walk(n_iter, initial_state, Sigma, weights, mu_tild
         % Sample x' ~ q(x'|x)
         x_prime = normrnd(x,Sigma);
         % Compute acceptance probability alpha
-        p_tilde_x_prime = gaussian_mix(x_prime, mu_tilde, sigma_tilde, weights, 0);
+        p_tilde_x_prime = gaussian_mix(x_prime, mu_tilde, sigma_tilde, weights);
         q_x_given_x_prime = normpdf(x, x_prime, Sigma);
-        p_tilde_x = gaussian_mix(x, mu_tilde, sigma_tilde, weights, 0);
+        p_tilde_x = gaussian_mix(x, mu_tilde, sigma_tilde, weights);
         q_x_prime_given_x = normpdf(x_prime, x, Sigma);
         
         alpha = (p_tilde_x_prime*q_x_given_x_prime)/(p_tilde_x*q_x_prime_given_x);

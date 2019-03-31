@@ -21,12 +21,14 @@
 %     - mu, Sigma: moments of the distribution of p (which is often assumed gaussian)
 
 
-function [sample, reject] = hmc_neal(U, grad_U, mu, Sigma, epsilon, randomize_epsilon, L,randomize_L, current_q, reject)
+function [sample, reject] = hmc(U, grad_U, mu, Sigma, epsilon, randomize_epsilon, L,randomize_L, current_q, reject)
 
 if randomize_epsilon ~=0 && randomize_epsilon ~=1 
     error('Randomization argument for epsilon should be 0 or 1.')
 elseif randomize_L~=0 && randomize_L ~=1
     error('Randomization argument for L should be 0 or 1.')
+elseif length(mu) ~= length(current_q)
+    error('The dimensionality of the momentum variable p and the position q have to be the same.')
 else  
     
     q = current_q;

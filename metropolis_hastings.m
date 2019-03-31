@@ -9,7 +9,7 @@ addpath('/Users/ines/Documents/MATLAB/Euler');
 x = [-30:0.1:40]
 mu_tilde = [-10, 20];
 sigma_tilde = [5, 7];
-p_tilde = gaussian_mix(x, mu_tilde, sigma_tilde, [1,1], 0);
+p_tilde = gaussian_mix(x, mu_tilde, sigma_tilde, [1,1]);
 
 figure(1)
 plot(x, p_tilde)

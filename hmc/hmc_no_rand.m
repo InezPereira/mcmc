@@ -24,6 +24,9 @@
 
 
 function [sample, reject] = hmc_no_rand(U, grad_U, mu, Sigma, epsilon, L, current_q, reject)
+if length(mu) ~= length(current_q)
+    error('The dimensionality of the momentum variable p and the position q have to be the same.')
+else
     q = current_q;
 
     % In the first step, new values for the momentum are drawn from their
@@ -32,21 +35,7 @@ function [sample, reject] = hmc_no_rand(U, grad_U, mu, Sigma, epsilon, L, curren
     current_p = p;
 
     % Leapfrog algorithm
-    % Make half a step for momentum
-     p = p - epsilon/2*grad_U(q); % gradient is taken with respect to every q_i
-     % Alternate full steps for position and momentum variables
-     for ii=1:L
-         % Full step for position
-         q = q + epsilon*p./Sigma;
-
-         % Make full step for the momentum, except at the end of trajectory
-         if ii~=L
-             p = p - epsilon*grad_U(q);
-         end
-     end
-
-     % Make another half step for the momentum in the end
-     p = p - epsilon*grad_U(q)/2;
+    [q, p] = leapfrog(p, epsilon, q, U, grad_U, L, Sigma)
 
      % Negate momentum to make proposal symmetric
      p = -p;
@@ -67,4 +56,5 @@ function [sample, reject] = hmc_no_rand(U, grad_U, mu, Sigma, epsilon, L, curren
          sample = current_q; % reject
          reject = reject +1;
      end
+end
 end

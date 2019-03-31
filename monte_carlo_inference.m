@@ -45,7 +45,7 @@ hold on
 x = [-30:0.1:40]
 mu_list = [0, 20];
 sigma_list = [1, 7];
-p = gaussian_mix(x, mu_list, sigma_list, 1);
+p = gaussian_mix(x, mu_list, sigma_list, weights);
 
 % fun = @create_distribution;
 % AUC = integral(@(y1,y2)fun(y1,y2), -Inf, Inf)
@@ -57,7 +57,7 @@ ylabel('p(x)')
 title('Function we want to approximate')
 
 % Create unnormalized distribution and proposal distribution
-p_tilde = gaussian_mix(x, mu_list, sigma_list, 1);
+p_tilde = gaussian_mix(x, mu_list, sigma_list, weights);
 plot(x, p_tilde)
 
 % How to define the proposal distribution?
@@ -150,7 +150,7 @@ figure;
 z_final = []
 for i=1:length(h)
     % Select color
-    if h(i) < gaussian_mix(r(i),mu_list,sigma_list, 0)
+    if h(i) < gaussian_mix(r(i),mu_list,sigma_list, weights)
         mycolor = [34, 139, 34]/255;
         z_final = [z_final, r(i)];
     else

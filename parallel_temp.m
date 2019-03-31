@@ -50,56 +50,31 @@ reject = [0, 0, 0];
 nChains = 3;
 % temp = repmat(1.1, 1, nChains);
 temp = [10,100,200];
-s   amples = {q0(1), q0(2), q0(3)};
+samples = {q0(1), q0(2), q0(3)};
 n_iter = 10^4;
 
 tic
 % ticBytes(gcp);
 for jj=1:n_iter
     % Run the Hamiltonian algorithm
+    current_K = zeros(1,nChains);
+    current_U = zeros(1,nChains);
     for ii = 1:nChains
-        [samples{ii}{jj+1}, reject(ii)] = hmc_neal(U, grad_U, mu, Sigma, epsilon, 1, L, 1, samples{ii}{jj}, reject(ii));
+        [samples{ii}{jj+1}, current_K(ii), current_U(ii), reject(ii)] = hmc_parallel_tempering(U, grad_U, mu, Sigma, epsilon, 1, L, 1, samples{ii}{jj}, reject(ii));
 
         if mod(jj,1000) ==0
             reject_rate = reject/jj;
             fprintf('Performing iteration number: (%d)\n', jj)
             fprintf('Current rejection rate: (%d)\n', reject_rate)
         end
-        
-%         if jj == n_iter
-%             final_reject(ii) = reject / n_iter;
-%         end
     end
-%     
-%     % State swapping step
-%     for ii = 1:nChains
-%         if ii == 1
-%             kk = 2;
-%         elseif ii == nChains
-%             kk = nChains - 1;
-%         else
-%             beta = rand();
-%             if beta < 0.5
-%                 kk = ii - 1;
-%             elseif beta > 0.5
-%                 kk = ii + 1;
-%             end
-%         end
-%         
-%         % Compute probability of swapping
-%         current_U = U(samples{ii}{jj+1});
-% %         current_K = sum(current_p.^2./Sigma)/2;
-%         proposed_U = U(samples{kk}{jj+1});
-% %         proposed_K = sum(p.^2./Sigma)/2;
-%         gamma = min(1, exp(current_U - proposed_U)*(1/temp(ii)-1/temp(kk)));
-%         
-%         if gamma > rand()
-%             samples{ii}{jj+1} = samples{kk}{jj+1};
-%         end
-%     end
-% From "Parallel tempering: Theory, applications and new perspective"
-% ﻿The acceptance probability in Hamiltonian parallel tempering for a swap 
-% between replicas i and j is given by
+    
+    for ii = 1:nChains
+        samples = state_swapping(jj, nChains, samples, temp, current_U, current_K);
+    end
+    
+ 
+   
 end
 % tocBytes(gcp)
 toc
@@ -129,7 +104,7 @@ save('samples','samples')
 %% Final visualizations
 
 % Choose a chain:
-chain = 1
+chain = 3
 
 % Figure to get the exploration space
 figure(3)
@@ -150,10 +125,10 @@ hold off;
 figure(4)
 hist3(cell2mat(samples{chain}'), 'FaceColor', [100 149 237]/255, 'Nbins',[20,20]);
 title("Hamiltonian Monte Carlo");
-xlabel('X')
-ylabel('Y')
+xlabel('X');
+ylabel('Y');
 zlabel('Absolute frequency');
-savefig('Hybrid_MC')
+savefig('Hybrid_MC');
 
 figure(5)
-traceplots(nChains, samples, 1)
+traceplots(nChains, samples, 1);
