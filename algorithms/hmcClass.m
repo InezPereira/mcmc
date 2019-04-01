@@ -15,7 +15,6 @@ classdef hmcClass
         randomize_epsilon = 1
         L = 20
         randomize_L = 1
-
     end
     
     properties (Dependent)
@@ -29,8 +28,7 @@ classdef hmcClass
         % Kinetic energy function
         Sigma_K     % Zero covariance assumed
         mu_K        % Zero mean by default
-        K % Assume kinetic energy is gaussian
-        
+        K % Assume kinetic energy is gaussian 
     end
     
     methods
@@ -148,10 +146,6 @@ classdef hmcClass
                     end
                 end
             end
-        end
-
-        
+        end    
     end
-    
-   
 end

@@ -8,7 +8,7 @@ addpath('diagnostics/');
 
 %% Define necessary parameters
 n_dim = 2
-[mu, Sigma, weights, p_tilde, U, grad_U] = define_param(n_dim);
+[mu, Sigma, weights, p_tilde] = define_param(n_dim);
 
 %% Initial plots of the distribution we want to approximate
 first_visualizations(p_tilde);
@@ -49,4 +49,4 @@ save('samples','samples')
 
 %% Final visualizations
 chain = 2 % Choose a chain
-final_visualizations(chain)
+final_visualizations(chain, samples)

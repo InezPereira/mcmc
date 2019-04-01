@@ -1,9 +1,9 @@
-function final_visualizations(chain)
+function final_visualizations(chain, samples)
 % Figure to get the exploration space
 figure(3)
 contour(X,Y,Z), hold on
-samples_plotted = cell2mat(samples{chain}')
-samples_plotted = samples_plotted(1:10^2:end,:)
+samples_plotted = cell2mat(samples{chain}');
+samples_plotted = samples_plotted(1:10^2:end,:);
 c = linspace(1,10,length(samples_plotted)); % more yellow is further along the line
 % c2 = linspace(1,10,length(samples_plotted));
 % c3 = linspace(1,10,length(samples_plotted));

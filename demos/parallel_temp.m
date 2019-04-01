@@ -69,11 +69,11 @@ for jj=1:n_iter
         end
     end
     
-    for ii = 1:nChains
-        samples = state_swapping(jj, nChains, samples, temp, current_U, current_K);
-    end
-    
- 
+%     for ii = 1:nChains
+%         samples = state_swapping(jj, nChains, samples, temp, current_U, current_K);
+%     end
+%     
+%  
    
 end
 % tocBytes(gcp)

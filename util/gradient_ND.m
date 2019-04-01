@@ -1,8 +1,6 @@
 function x_grad  = gradient_ND(x, func)
 % Replaced meshgrid with more general ndgrid: https://ch.mathworks.com/help/matlab/ref/ndgrid.html
 
-% Only works for two dimensions
-
 if ~isvector(x)
     error('The point x has to be a vector!')
 else
