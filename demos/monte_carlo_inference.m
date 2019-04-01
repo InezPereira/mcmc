@@ -4,6 +4,7 @@
 % This script serves to implement the sampling methods discussed in the
 % aforementioned chapter, complemented with other additional resources.
 
+%% Import statements
 addpath('~/Documents/MATLAB');
 addpath('../');
 

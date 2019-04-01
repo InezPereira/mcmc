@@ -3,7 +3,6 @@
 % GRIMS R package and/or formulation from Chapter 5 of the "Hanbook of
 % Markov Chain Monte Carlo.
 
-        % Leapfrog algorithm
 function [q, p] = leapfrog_temp(p, epsilon, q, U, grad_U, L, Sigma, temp)
     % Check validatity of temp(erature) argument
     if temp <=0
@@ -29,27 +28,27 @@ function [q, p] = leapfrog_temp(p, epsilon, q, U, grad_U, L, Sigma, temp)
                 p = p./sqrt(temp);
             end
             
-        % Make half a step for momentum
-        p = p - epsilon/2.*grad_U(q, U)'; % gradient is taken with respect to every q_i
-        % Alternate full steps for position and momentum variables
+            % Make half a step for momentum
+            p = p - epsilon/2.*grad_U(q, U)'; % gradient is taken with respect to every q_i
+            % Alternate full steps for position and momentum variables
 
-        % Full step for position
-        q = q + epsilon.*p./Sigma;
+            % Full step for position
+            q = q + epsilon.*p./Sigma;
+
+            % Make another half step for the momentum in the end
+            p = p - epsilon.*grad_U(q, U)'/2;
         
-        % Make another half step for the momentum in the end
-        p = p - epsilon.*grad_U(q, U)'/2;
-        
-        % After leapfrog step: multiply or divide by temperature, 
-        % depending on which half of the trajectory is considered. 
-        if ii <= L/2
-            p = p.*sqrt(temp);
-        elseif ii>L/2
-            p = p./sqrt(temp);
+            % After leapfrog step: multiply or divide by temperature, 
+            % depending on which half of the trajectory is considered. 
+            if ii <= L/2
+                p = p.*sqrt(temp);
+            elseif ii>L/2
+                p = p./sqrt(temp);
+            end
         end
+    end
         
-        end
-        
-        if mod(L,2)==1
+    if mod(L,2)==1
         for ii=1:L
             % Before leapfrog step: multiply or divide by temperature, 
             % depending on which half of the trajectory is considered.
@@ -60,30 +59,26 @@ function [q, p] = leapfrog_temp(p, epsilon, q, U, grad_U, L, Sigma, temp)
             elseif ii>L/2
                 p = p./sqrt(temp);
             end
-            
-        % Make half a step for momentum
-        p = p - epsilon/2.*grad_U(q, U)'; % gradient is taken with respect to every q_i
-        % Alternate full steps for position and momentum variables
 
-        % Full step for position
-        q = q + epsilon.*p./Sigma;
-        
-        % Make another half step for the momentum in the end
-        p = p - epsilon.*grad_U(q, U)'/2;
-        
-        % After leapfrog step: multiply or divide by temperature, 
-        % depending on which half of the trajectory is considered. 
-        if ii <= ceil(L/2)-1
-            p = p.*sqrt(temp);
-        elseif ii == ceil(L/2)
-            p = p./sqrt(temp);
-        elseif ii>L/2
-            p = p./sqrt(temp);
+            % Make half a step for momentum
+            p = p - epsilon/2.*grad_U(q, U)'; % gradient is taken with respect to every q_i
+            % Alternate full steps for position and momentum variables
+
+            % Full step for position
+            q = q + epsilon.*p./Sigma;
+
+            % Make another half step for the momentum in the end
+            p = p - epsilon.*grad_U(q, U)'/2;
+
+            % After leapfrog step: multiply or divide by temperature, 
+            % depending on which half of the trajectory is considered. 
+            if ii <= ceil(L/2)-1
+                p = p.*sqrt(temp);
+            elseif ii == ceil(L/2)
+                p = p./sqrt(temp);
+            elseif ii>L/2
+                p = p./sqrt(temp);
+            end   
         end
-        
-        end
-
-
-     
     end
 end

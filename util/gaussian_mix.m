@@ -1,8 +1,4 @@
 function p = gaussian_mix(x, list_mu, list_sigma, weights)
-    if normalize ~=1 && normalize ~= 0
-        error('Not an allowed value for the normalize argument! Pick either 0 or 1!')
-    end
-    
     % https://brilliant.org/wiki/gaussian-mixture-model/
     % You need to check that the weights sum up to one!
     if sum(weights)~=1
