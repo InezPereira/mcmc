@@ -137,6 +137,10 @@ classdef hmcClass
             for jj=1:obj.n_iter
                 for ii = 1:obj.nChains
             % Run the Hamiltonian algorithm
+                % Not running. Maybe related to not knowing how Matlab
+                % processes the functions handles when passed as an input
+                % to a function? In any case, check: 
+                % https://ch.mathworks.com/help/matlab/ref/feval.html
                     [obj.samples{ii}{jj+1}, obj.reject(ii)] = hmc(obj.U, obj.grad_U, obj.mu_K, obj.Sigma_K, obj.epsilon, obj.randomize_epsilon, obj.L, obj.randomize_L, obj.samples{ii}{jj}, obj.reject);
                     if mod(jj,10) ==0
                         reject_rate = obj.reject/jj;

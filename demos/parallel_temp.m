@@ -2,9 +2,13 @@
 
 %% Import statements
 addpath('../');
-addpath('util/');
-addpath('hmc/');
+addpath('algorithms/');
+addpath('data/');
 addpath('diagnostics/');
+addpath('GUI/');
+addpath('resources/');
+addpath('util/');
+
 % addpath('/Users/ines/Documents/MATLAB/Euler');
 
 %% Define the parameters necessary for kinetic energy function (assumed gaussian)
@@ -17,7 +21,7 @@ Sigma = repmat(1, 1, n_dim); % Sigma for each variable p_i, here considered to h
 % it is a gaussian mixture
 % mu_tilde = {[-5, -5], [0,0], [3,3]};
 n_mix = 3
-mu_tilde = {repmat(-10, 1, n_dim), repmat(0, 1, n_dim), repmat(3, 1, n_dim)}
+mu_tilde = {repmat(-5, 1, n_dim), repmat(0, 1, n_dim), repmat(3, 1, n_dim)}
 sigma_tilde = {2*eye(n_dim), 3*eye(n_dim), 4*eye(n_dim)}; % Assumption of independence made (no covariance)
 weights = repmat(1/n_mix, 1, n_mix);
 p_tilde = @(X) gaussian_mix_ND(X, mu_tilde, sigma_tilde, weights);
@@ -51,7 +55,7 @@ nChains = 3;
 % temp = repmat(1.1, 1, nChains);
 temp = [10,100,200];
 samples = {q0(1), q0(2), q0(3)};
-n_iter = 10^4;
+n_iter = 10^3;
 
 tic
 % ticBytes(gcp);
@@ -67,6 +71,17 @@ for jj=1:n_iter
             fprintf('Performing iteration number: (%d)\n', jj)
             fprintf('Current rejection rate: (%d)\n', reject_rate)
         end
+    end
+    
+    if mod(jj,100) == 0 
+        samplesForDiag = zeros(jj+1, n_dim, nChains); % +1 because of the initialization values, which are included
+        for kk=1:nChains
+            samplesForDiag(:,:,kk) = cell2mat(samples{kk}');
+        end
+        R = psrf(samplesForDiag);
+        figure(21)
+        scatter(jj, R(1)); % According to Aponte et al: A r_hat statistic below 1.1 is a commonly accepted criterion for convergence...
+        hold on; pause(0.05)
     end
     
 %     for ii = 1:nChains
@@ -132,3 +147,46 @@ savefig('Hybrid_MC');
 
 figure(5)
 traceplots(nChains, samples, 1);
+
+%% Numerical convergence diagnostics
+
+% Conversion to format readable by the already implemented function
+samplesForDiag = zeros(n_iter+1, n_dim, nChains); % +1 because of the initialization values, which are included
+for ii=1:nChains
+    samplesForDiag(:,:,ii) = cell2mat(samples{ii}');
+end
+
+[R,neff,Vh,W,B,tau,thin] = psrf(samplesForDiag)
+
+%% Creating an interactive diagnostic environment
+
+% Example from Mathworks (getCoord script belongs to this)
+% https://ch.mathworks.com/matlabcentral/answers/59647-interactive-plotting-get-another-plot-via-clicking-point-in-current-figure
+ aH = axes;
+ lH(1) = plot(aH,rand(10,1),'bs');
+ hold on
+ lH(2) = plot(aH,rand(10,1),'ro');
+ lH(3) = plot(aH,rand(10,1),'k+');
+ lH(4) = plot(aH,rand(10,1),'g^'); % some lines
+ set(lH,'hittest','off'); % so you can click on the Markers
+ hold on; 
+ set(aH,'ButtonDownFcn',@getCoord); % Defining what happens when clicking
+ uiwait(f) %so multiple clicks can be used
+ 
+ %% Other experiment for interactive figure
+ 
+ for ii=1:10^2
+    x = [ii,3];
+    scatter(x(1), x(2))
+    hold on; pause(0.05)
+ end
+
+close all
+s=0;mu=0.5
+figure
+set(gca,'xlim',[0.5 10],'ylim',[-5 0])
+while s<10
+s=s+0.05
+n= (mu-s)./nthroot((mu<s).*(s-mu),3)
+hold on;plot (s,n,'*r');pause(0.05)
+end
